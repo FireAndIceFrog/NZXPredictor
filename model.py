@@ -9,6 +9,7 @@ from keras.layers import Dense,LSTM, Conv2D,MaxPool2D,Flatten,Dropout
 from keras.models import model_from_json
 import matplotlib.pyplot as plt
 from datetime import datetime
+from Main import getTargetBuySell,getCombinedDF
 
 
 plt.style.use ('fivethirtyeight')
@@ -24,7 +25,7 @@ model = Sequential()
 # model.add(Dense(1,use_bias = True))
 
 
-model.add(Conv2D(32,(16,16),activation = 'relu', input_shape = (1,60,5),padding = 'same',init='glorot_uniform'))
+model.add(Conv2D(32,(16,16),activation = 'relu', input_shape = (1,3,5),padding = 'same',init='glorot_uniform'))
 model.add(MaxPool2D((2,2),padding='same'))
 
 #second round
@@ -44,60 +45,37 @@ model.add(Dense(1,use_bias = True))
 
 model.compile(optimizer = 'adam', loss = 'mean_squared_logarithmic_error')
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 print(model.input_shape)
 print(model.output_shape)
 for string in strings:
     df = web.DataReader(string+".nz", data_source = 'yahoo', start = '2012-01-01', end = datetime.today().strftime('%Y-%m-%d'))
     #Create a new DF With only the close column
-    data = df.filter(['Close','High','Low','Open','Volume'])
+    dataset,keys = getCombinedDF(address = string+".nz")
+    targetData = getTargetBuySell(address = string+".nz")
     # data = df.filter(['Close'])
     # print (data)
     #convert the datafram to a numpy arr
-    dataset = data.values
+    # dataset = data.values
     # Get the number of rows to train the model
-    training_data_len = math.ceil(len(dataset) *0.8)
+    training_data_len = math.ceil(len(dataset) *1)
     print("Data length: ",len(dataset),"\nTraining Length: ",training_data_len)
 
     # scale the data
-    scaler = MinMaxScaler(feature_range = (0,1))
-    scaled_data = scaler.fit_transform(dataset)
+    
 
     # print(scaled_data)
 
     # create the training dataset
-    # Create the scaed training set
-    train_data = scaled_data[0:training_data_len, :]
+    train_data = dataset[0:training_data_len, :]
     # Split the data into X_train and Y_train dataset
     # Independant variables
     x_train = []
     # target
     y_train = []
 
-    for i in range(60, len(train_data)):
-        x_train.append(train_data[i-60:i, :])
-        y_train.append(train_data[i,0])
+    for i in range(3, len(train_data)):
+        x_train.append(train_data[i-3:i, :])
+        y_train.append(targetData[i,:])
         
 
     # Convert to numpy arrs
