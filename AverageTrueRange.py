@@ -22,6 +22,6 @@ class ADX(AC.converter):
     def predict(self):
         super().predict()
         self.returnable = pd.DataFrame([], columns = [ self.key])
-        self.returnable[self.key] = self.df.loc[:,'adx'].sub(self.df.loc[:,'adxr']).apply(lambda num: (2/(1+exp(-num/self.scaler)))-1)
+        self.returnable[self.key] = self.df.loc[:,'adx'].sub(self.df.loc[:,'adxr']).apply(lambda num: (1/(1+exp(-num/self.scaler))))
         
 

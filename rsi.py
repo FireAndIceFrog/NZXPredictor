@@ -30,7 +30,7 @@ class RSI(AC.converter):
         # We want 1 to be the good signal and -1 to be the bad signal.
         # For RSI, a value over 70 is considered BAD
         # To fix this, we are going to times the value by the negation plus 100
-        self.returnable[self.key] = self.df.loc[:,'rsi_12'].apply(lambda a : (-2.0*a+100.0)/100.0)
+        self.returnable[self.key] = self.df.loc[:,'rsi_12'].apply(lambda a : (a)/100.0)
 
 if __name__ == "__main__":
     

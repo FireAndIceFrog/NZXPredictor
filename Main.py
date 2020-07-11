@@ -51,10 +51,10 @@ def plot(key, df, show = True, labelx = 'Distributions:'):
 
 
 
-def getCombinedDF(minMA = 50):
+def getCombinedDF(minMA = 50,address = 'aba.nz'):
     keys = []
     key = "mainMA"
-    df=web.DataReader('aba.nz', data_source = 'yahoo', start = '2012-01-01', end = datetime.today().strftime('%Y-%m-%d'))
+    df=web.DataReader(address, data_source = 'yahoo', start = '2012-01-01', end = datetime.today().strftime('%Y-%m-%d'))
     MADist = getMAsig(df, minMA, 1, key)
     plot(key, MADist, show = False, labelx = 'MA')
     keys.append(key)    
@@ -70,15 +70,20 @@ def getCombinedDF(minMA = 50):
     RSIsig = getRSIsig(df,key)
     plot(key,RSIsig,show = False, labelx = 'RSI')
     keys.append(key)
-
+    # Reset the DF
+    df=web.DataReader(address, data_source = 'yahoo', start = '2012-01-01', end = datetime.today().strftime('%Y-%m-%d'))
     sigDF = MADist
     sigDF["MACD"] = MACDsig
     sigDF["ADX"]= ADXsig
     sigDF["RSI"] = RSIsig 
+    sigDF["High"] = df['High']
+    sigDF["Low"] = df['Low']
+    sigDF["Volume"] = df['Volume']
+    sigDF["Open"] = df['Open']
     # Remove invalid data points
     # Remember: Remove the initial values from the DF. if you have NAN numbers it will damage the AI
     sigDF = sigDF[minMA:]
-    print(sigDF)
+    # print(sigDF)
     return (sigDF.to_numpy(),keys)
 
 class sigGen:

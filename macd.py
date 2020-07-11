@@ -36,6 +36,6 @@ class MACD(AC.converter):
         shortEMA[ 'short'] = self.df['Close'].ewm(span = self.shortMA).mean()
         longEMA  [ 'long'] = self.df['Close'].ewm(span = self.longMA).mean()
         # get the returnable
-        self.returnable[self.key]= shortEMA.loc[:,'short'].sub(longEMA.loc[:,'long']).apply(lambda num: (2/(1+exp(-num/self.scaler)))-1)
+        self.returnable[self.key]= shortEMA.loc[:,'short'].sub(longEMA.loc[:,'long']).apply(lambda num: (1/(1+exp(-num/self.scaler))))
 
 
